@@ -76,6 +76,11 @@ There are a number of supported schemes, that you can use to determine the targe
   This is a special scheme that will bypass the normal channel factory and will use the `InProcessChannelFactory`
   instead. Use it to connect to the [`InProcessServer`](../server/configuration.md#enabling-the-inprocessserver). \
   Example: `in-process:foobar`
+- `null`: \
+  This is a special scheme that will bypass the normal channel factory and will use the `NullChannelFactory`
+  instead. Use it to use `null` for a GrpcClient annotated field. \
+  Useful for testing. \
+  Example: `null:/`
 - *custom*: \
   You can define custom
   [`NameResolverProvider`s](https://javadoc.io/page/io.grpc/grpc-all/latest/io/grpc/NameResolverProvider.html) those
