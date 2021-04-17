@@ -138,82 +138,82 @@ cloudEurekaTest() {
 
 ## Cloud-Nacos
 cloudNacosTest() {
-    echo "Starting Cloud Nacos test"
+	echo "Starting Cloud Nacos test"
 
-    # Run environment
-    docker pull nacos/nacos-server
-    NACOS=`docker run --env MODE=standalone --name nacos -d -p 8848:8848 nacos/nacos-server`
-    sleep 10s # Wait for the nacos server to start
+	# Run environment
+	docker pull nacos/nacos-server
+	NACOS=`docker run --env MODE=standalone --name nacos -d -p 8848:8848 nacos/nacos-server`
+	sleep 10s # Wait for the nacos server to start
 
-    ./gradlew :example:cloud-grpc-server-nacos:bootRun -x jar -x classes --console=plain &
-    CLOUD_SERVER=$!
-    sleep 10s # Wait for the server to start
+	./gradlew :example:cloud-grpc-server-nacos:bootRun -x jar -x classes --console=plain &
+	CLOUD_SERVER=$!
+	sleep 10s # Wait for the server to start
 
-    ./gradlew :example:cloud-grpc-client-nacos:bootRun -x jar -x classes --console=plain &
-    CLOUD_CLIENT=$!
-    sleep 30s # Wait for the client to start and the server to be ready
-    sleep 60s # Wait for the discovery service to refresh
+	./gradlew :example:cloud-grpc-client-nacos:bootRun -x jar -x classes --console=plain &
+	CLOUD_CLIENT=$!
+	sleep 30s # Wait for the client to start and the server to be ready
+	sleep 60s # Wait for the discovery service to refresh
 
-    # Test
-    RESPONSE=$(curl -s localhost:8080/)
-    echo "Response:"
-    echo "$RESPONSE"
-    EXPECTED=$(echo -e "Hello ==> Michael")
-    echo "Expected:"
-    echo "$EXPECTED"
-    sleep 1s # Give the user a chance to look at the result
+	# Test
+	RESPONSE=$(curl -s localhost:8080/)
+	echo "Response:"
+	echo "$RESPONSE"
+	EXPECTED=$(echo -e "Hello ==> Michael")
+	echo "Expected:"
+	echo "$EXPECTED"
+	sleep 1s # Give the user a chance to look at the result
 
-    # Crash server
-    kill -s TERM $CLOUD_SERVER
-    echo "The server crashed (expected)"
-    sleep 1s # Wait for the shutdown logs to pass
+	# Crash server
+	kill -s TERM $CLOUD_SERVER
+	echo "The server crashed (expected)"
+	sleep 1s # Wait for the shutdown logs to pass
 
-    # and restart server
-    ./gradlew :example:cloud-grpc-server-nacos:bootRun -x jar -x classes --console=plain &
-    CLOUD_SERVER=$!
-    sleep 30s # Wait for the server to start
-    sleep 60s # Wait for the discovery service to refresh
-    
-    # Test again
-    RESPONSE2=$(curl -s localhost:8080/)
-    echo "Response:"
-    echo "$RESPONSE2"
-    EXPECTED=$(echo -e "Hello ==> Michael")
-    echo "Expected:"
-    echo "$EXPECTED"
-    sleep 1s # Give the user a chance to look at the result
+	# and restart server
+	./gradlew :example:cloud-grpc-server-nacos:bootRun -x jar -x classes --console=plain &
+	CLOUD_SERVER=$!
+	sleep 30s # Wait for the server to start
+	sleep 60s # Wait for the discovery service to refresh
+	
+	# Test again
+	RESPONSE2=$(curl -s localhost:8080/)
+	echo "Response:"
+	echo "$RESPONSE2"
+	EXPECTED=$(echo -e "Hello ==> Michael")
+	echo "Expected:"
+	echo "$EXPECTED"
+	sleep 1s # Give the user a chance to look at the result
 
-    # Shutdown
-    echo "Triggering shutdown"
-    docker stop $NACOS
-    docker rm -f $NACOS
-    kill -s TERM $CLOUD_SERVER
-    kill -s TERM $CLOUD_CLIENT
-    sleep 1s # Wait for the shutdown logs to pass
+	# Shutdown
+	echo "Triggering shutdown"
+	docker stop $NACOS
+	docker rm -f $NACOS
+	kill -s TERM $CLOUD_SERVER
+	kill -s TERM $CLOUD_CLIENT
+	sleep 1s # Wait for the shutdown logs to pass
 
-    # Verify part 1
-    if [ "$RESPONSE" = "$EXPECTED" ]; then
-        echo "#-----------------------------------#"
-        echo "| Cloud Nacos example part 1 works! |"
-        echo "#-----------------------------------#"
-    else
-        echo "#------------------------------------#"
-        echo "| Cloud Nacos example part 1 failed! |"
-        echo "#------------------------------------#"
-        exit 1
-    fi
+	# Verify part 1
+	if [ "$RESPONSE" = "$EXPECTED" ]; then
+		echo "#-----------------------------------#"
+		echo "| Cloud Nacos example part 1 works! |"
+		echo "#-----------------------------------#"
+	else
+		echo "#------------------------------------#"
+		echo "| Cloud Nacos example part 1 failed! |"
+		echo "#------------------------------------#"
+		exit 1
+	fi
 
-    # Verify part 2
-    if [ "$RESPONSE2" = "$EXPECTED" ]; then
-        echo "#-----------------------------------#"
-        echo "| Cloud Nacos example part 2 works! |"
-        echo "#-----------------------------------#"
-    else
-        echo "#------------------------------------#"
-        echo "| Cloud Nacos example part 2 failed! |"
-        echo "#------------------------------------#"
-        exit 1
-    fi
+	# Verify part 2
+	if [ "$RESPONSE2" = "$EXPECTED" ]; then
+		echo "#-----------------------------------#"
+		echo "| Cloud Nacos example part 2 works! |"
+		echo "#-----------------------------------#"
+	else
+		echo "#------------------------------------#"
+		echo "| Cloud Nacos example part 2 failed! |"
+		echo "#------------------------------------#"
+		exit 1
+	fi
 }
 
 ## Security Basic Auth
